@@ -1,21 +1,21 @@
 import React, { FunctionComponent, useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Pokemon from '../models/pokemon';
-import POKEMONS from '../models/mock-pokemon';
+import PokemonService from '../services/pokemon-service';
 import formatDate from '../helpers/format-date';
 import formatType from '../helpers/format-type';
+import Loader from '../components/loader';
 
 const PokemonsDetail: FunctionComponent = () => {
   const { id } = useParams();
   const [pokemon, setPokemon] = useState<Pokemon | null>(null); // dire à typescript que soit la valeur est un pokémon ou elle est nulle
 
-  useEffect(() => {
-    POKEMONS.forEach((pokemon) => {
-      if (id === pokemon.id.toString()) {
-        setPokemon(pokemon);
-      }
-    });
-  }, [id]);
+   useEffect(() => {
+    if(id !== undefined)
+     PokemonService.getPokemon(+id).then((pokemon) => {
+       setPokemon(pokemon);
+     });
+   }, [id]);
 
   return (
     <div>
@@ -81,7 +81,7 @@ const PokemonsDetail: FunctionComponent = () => {
           </div>
         </div>
       ) : (
-        <h4 className='center'>Aucun pokémon à afficher !</h4>
+        <h4 className='center'><Loader/></h4>
       )}
     </div>
   );
